@@ -3,56 +3,103 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const arenas = [
-  {
-    icon: "✦",
-    name: "Prompt Arena",
-    description: "Battle with AI prompts. Best output wins.",
-    status: "live",
-  },
-  {
-    icon: "⌥",
-    name: "Coding Arena",
-    description: "Solve challenges. Ship faster than anyone.",
-    status: "soon",
-  },
-  {
-    icon: "◈",
-    name: "Marketing Arena",
-    description: "Craft campaigns that move people.",
-    status: "soon",
-  },
-  {
-    icon: "◇",
-    name: "Business Arena",
-    description: "Think bigger. Build smarter.",
-    status: "soon",
-  },
-  {
-    icon: "⟡",
-    name: "Trading Arena",
-    description: "Read the market. Outplay the field.",
-    status: "soon",
-  },
+  { icon: "✦", name: "Prompt Arena", description: "Battle with AI prompts. Best output wins.", status: "live" },
+  { icon: "⌥", name: "Coding Arena", description: "Solve challenges. Ship faster than anyone.", status: "soon" },
+  { icon: "◈", name: "Marketing Arena", description: "Craft campaigns that move people.", status: "soon" },
+  { icon: "◇", name: "Business Arena", description: "Think bigger. Build smarter.", status: "soon" },
+  { icon: "⟡", name: "Trading Arena", description: "Read the market. Outplay the field.", status: "soon" },
 ];
 
-// Neural network dots for background
 const dots = Array.from({ length: 20 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 3 + 1,
-  duration: Math.random() * 4 + 3,
+  id: i, x: Math.random() * 100, y: Math.random() * 100,
+  size: Math.random() * 3 + 1, duration: Math.random() * 4 + 3,
 }));
+
+function SilkBackground() {
+  return (
+    <div style={{ position: "fixed", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
+      <motion.div
+        animate={{ x: [0, 100, -50, 0], y: [0, -80, 60, 0], scale: [1, 1.2, 0.9, 1] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute", top: "-10%", left: "-10%",
+          width: "60vw", height: "60vw", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%)",
+          filter: "blur(60px)",
+        }}
+      />
+      <motion.div
+        animate={{ x: [0, -120, 80, 0], y: [0, 100, -60, 0], scale: [1, 0.8, 1.3, 1] }}
+        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute", bottom: "-15%", right: "-10%",
+          width: "70vw", height: "70vw", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)",
+          filter: "blur(70px)",
+        }}
+      />
+      <motion.div
+        animate={{ x: [0, 60, -90, 0], y: [0, -50, 80, 0], scale: [1, 1.15, 0.85, 1] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute", top: "30%", left: "40%",
+          width: "45vw", height: "45vw", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(233,213,255,0.1) 0%, transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
+    </div>
+  );
+}
+
+function ArenaCard({ arena, i }: { arena: typeof arenas[0]; i: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.7, delay: i * 0.1, ease: "easeOut" }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      style={{
+        background: arena.status === "live"
+          ? "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(168,85,247,0.1))"
+          : "rgba(255,255,255,0.03)",
+        border: arena.status === "live" ? "1px solid rgba(168,85,247,0.5)" : "1px solid rgba(255,255,255,0.08)",
+        borderRadius: "16px", padding: "1.5rem",
+        cursor: arena.status === "live" ? "pointer" : "default",
+        backdropFilter: "blur(10px)",
+        boxShadow: arena.status === "live"
+          ? "0 0 20px rgba(124,58,237,0.2), inset 0 1px 0 rgba(255,255,255,0.1)"
+          : "inset 0 1px 0 rgba(255,255,255,0.05)",
+      }}
+    >
+      <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem", color: arena.status === "live" ? "#C4B5FD" : "#4B5563" }}>
+        {arena.icon}
+      </div>
+      <h2 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.4rem", color: arena.status === "live" ? "#E9D5FF" : "#4B5563" }}>
+        {arena.name}
+      </h2>
+      <p style={{ fontSize: "0.8rem", color: arena.status === "live" ? "#9F7AEA" : "#374151", marginBottom: "1rem", lineHeight: 1.5 }}>
+        {arena.description}
+      </p>
+      <span style={{
+        fontSize: "0.7rem", padding: "0.25rem 0.75rem", borderRadius: "100px", fontWeight: "600",
+        letterSpacing: "0.1em", textTransform: "uppercase",
+        background: arena.status === "live" ? "rgba(168,85,247,0.3)" : "rgba(255,255,255,0.05)",
+        color: arena.status === "live" ? "#C4B5FD" : "#4B5563",
+        border: arena.status === "live" ? "1px solid rgba(168,85,247,0.4)" : "1px solid rgba(255,255,255,0.08)",
+      }}>
+        {arena.status === "live" ? "● Live" : "Coming Soon"}
+      </span>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [splashPhase, setSplashPhase] = useState(0);
 
   useEffect(() => {
-    // Phase 0: dots appear (0-1s)
-    // Phase 1: NAYRE builds in (1-2.5s)
-    // Phase 2: tagline fades (2.5-3.5s)
-    // Phase 3: splash exits (3.5-4.5s)
     const t1 = setTimeout(() => setSplashPhase(1), 800);
     const t2 = setTimeout(() => setSplashPhase(2), 2000);
     const t3 = setTimeout(() => setSplashPhase(3), 3200);
@@ -62,7 +109,6 @@ export default function Home() {
 
   return (
     <>
-      {/* SPLASH SCREEN */}
       <AnimatePresence>
         {showSplash && (
           <motion.div
@@ -70,102 +116,61 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
             style={{
-              position: "fixed",
-              inset: 0,
-              background: "#080010",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 100,
-              overflow: "hidden",
+              position: "fixed", inset: 0, background: "#080010",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              zIndex: 100, overflow: "hidden",
             }}
           >
-            {/* Neural dots */}
             {dots.map((dot) => (
               <motion.div
                 key={dot.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 0.4, 0.1, 0.4] }}
-                transition={{
-                  duration: dot.duration,
-                  repeat: Infinity,
-                  delay: dot.id * 0.1,
-                }}
+                transition={{ duration: dot.duration, repeat: Infinity, delay: dot.id * 0.1 }}
                 style={{
-                  position: "absolute",
-                  left: `${dot.x}%`,
-                  top: `${dot.y}%`,
-                  width: dot.size,
-                  height: dot.size,
-                  borderRadius: "50%",
-                  background: "#A855F7",
+                  position: "absolute", left: `${dot.x}%`, top: `${dot.y}%`,
+                  width: dot.size, height: dot.size, borderRadius: "50%", background: "#A855F7",
                 }}
               />
             ))}
-
-            {/* Center glow */}
             <div style={{
-              position: "absolute",
-              width: "400px",
-              height: "400px",
+              position: "absolute", width: "400px", height: "400px",
               background: "radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)",
               borderRadius: "50%",
             }} />
-
-            {/* NAYRE letters */}
             {splashPhase >= 1 && (
               <motion.h1
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 style={{
-                  fontSize: "clamp(5rem, 18vw, 12rem)",
-                  fontWeight: "700",
-                  letterSpacing: "-0.02em",
+                  fontSize: "clamp(5rem, 18vw, 12rem)", fontWeight: "700", letterSpacing: "-0.02em",
                   background: "linear-gradient(135deg, #E9D5FF 0%, #A855F7 40%, #7C3AED 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  lineHeight: 1,
-                  textAlign: "center",
-                  filter: "drop-shadow(0 0 40px rgba(168,85,247,0.5))",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                  lineHeight: 1, textAlign: "center", filter: "drop-shadow(0 0 40px rgba(168,85,247,0.5))",
                 }}
               >
                 NAYRE
               </motion.h1>
             )}
-
-            {/* Tagline */}
             {splashPhase >= 2 && (
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                style={{
-                  fontSize: "0.85rem",
-                  letterSpacing: "0.4em",
-                  color: "#9F7AEA",
-                  textTransform: "uppercase",
-                  marginTop: "1.5rem",
-                }}
+                style={{ fontSize: "0.85rem", letterSpacing: "0.4em", color: "#9F7AEA", textTransform: "uppercase", marginTop: "1.5rem" }}
               >
                 Where the best burn brightest
               </motion.p>
             )}
-
-            {/* Pulse ring */}
             {splashPhase >= 2 && (
               <motion.div
                 initial={{ scale: 0.5, opacity: 0.8 }}
                 animate={{ scale: 2, opacity: 0 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 style={{
-                  position: "absolute",
-                  width: "200px",
-                  height: "200px",
-                  borderRadius: "50%",
-                  border: "1px solid rgba(168,85,247,0.6)",
+                  position: "absolute", width: "200px", height: "200px",
+                  borderRadius: "50%", border: "1px solid rgba(168,85,247,0.6)",
                 }}
               />
             )}
@@ -173,84 +178,41 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* MAIN LANDING PAGE */}
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "linear-gradient(135deg, #080010 0%, #0D0019 50%, #080010 100%)",
-          color: "white",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "2rem",
-          position: "relative",
-          overflow: "hidden",
-          fontFamily: "'Space Grotesk', sans-serif",
-        }}
-      >
-        {/* Background glow */}
-        <div style={{
-          position: "absolute",
-          top: "20%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "600px",
-          height: "600px",
-          background: "radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
+      <main style={{
+        minHeight: "100vh", background: "#080010", color: "white",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        padding: "2rem", position: "relative", overflow: "hidden",
+        fontFamily: "'Space Grotesk', sans-serif",
+      }}>
+        <SilkBackground />
 
-        {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          style={{ textAlign: "center", marginBottom: "4rem", zIndex: 1 }}
+          style={{ textAlign: "center", marginBottom: "4rem", zIndex: 1, position: "relative" }}
         >
           <motion.div
             animate={{ opacity: [0.7, 1, 0.7] }}
             transition={{ duration: 3, repeat: Infinity }}
-            style={{
-              fontSize: "0.75rem",
-              letterSpacing: "0.4em",
-              color: "#9F7AEA",
-              marginBottom: "1rem",
-              textTransform: "uppercase",
-            }}
+            style={{ fontSize: "0.75rem", letterSpacing: "0.4em", color: "#9F7AEA", marginBottom: "1rem", textTransform: "uppercase" }}
           >
             Where the best burn brightest
           </motion.div>
 
           <h1 style={{
-            fontSize: "clamp(4rem, 12vw, 8rem)",
-            fontWeight: "700",
-            letterSpacing: "-0.02em",
+            fontSize: "clamp(4rem, 12vw, 8rem)", fontWeight: "700", letterSpacing: "-0.02em",
             background: "linear-gradient(135deg, #E9D5FF 0%, #A855F7 40%, #7C3AED 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            lineHeight: 1,
-            marginBottom: "1.5rem",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+            lineHeight: 1, marginBottom: "1.5rem",
           }}>
             NAYRE
           </h1>
 
-          <p style={{
-            fontSize: "1.1rem",
-            color: "#C4B5FD",
-            marginBottom: "0.5rem",
-            fontWeight: "300",
-            letterSpacing: "0.05em",
-          }}>
+          <p style={{ fontSize: "1.1rem", color: "#C4B5FD", marginBottom: "0.5rem", fontWeight: "300", letterSpacing: "0.05em" }}>
             Compete. Build Reputation. Get Discovered.
           </p>
-
-          <p style={{
-            fontSize: "0.9rem",
-            color: "#6B7280",
-            marginBottom: "2.5rem",
-          }}>
+          <p style={{ fontSize: "0.9rem", color: "#6B7280", marginBottom: "2.5rem" }}>
             The arena for AI creators, coders, marketers & traders.
           </p>
 
@@ -258,114 +220,28 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
             style={{
-              background: "linear-gradient(135deg, #7C3AED, #A855F7)",
-              color: "white",
-              border: "none",
-              padding: "1rem 2.5rem",
-              borderRadius: "100px",
-              fontSize: "1rem",
-              fontWeight: "600",
-              cursor: "pointer",
-              letterSpacing: "0.05em",
-              boxShadow: "0 0 30px rgba(168,85,247,0.4)",
+              background: "linear-gradient(135deg, #7C3AED, #A855F7)", color: "white", border: "none",
+              padding: "1rem 2.5rem", borderRadius: "100px", fontSize: "1rem", fontWeight: "600",
+              cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 0 30px rgba(168,85,247,0.4)",
             }}
           >
             Enter Prompt Arena →
           </motion.button>
         </motion.div>
 
-        {/* Arena Cards */}
         <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: "1rem",
-          maxWidth: "1000px",
-          width: "100%",
-          zIndex: 1,
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: "1rem", maxWidth: "1000px", width: "100%", zIndex: 1, position: "relative",
         }}>
-          {arenas.map((arena, i) => (
-            <motion.div
-              key={arena.name}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 + i * 0.1 }}
-              whileHover={{ y: -4, scale: 1.02 }}
-              style={{
-                background: arena.status === "live"
-                  ? "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(168,85,247,0.1))"
-                  : "rgba(255,255,255,0.03)",
-                border: arena.status === "live"
-                  ? "1px solid rgba(168,85,247,0.5)"
-                  : "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "16px",
-                padding: "1.5rem",
-                cursor: arena.status === "live" ? "pointer" : "default",
-                backdropFilter: "blur(10px)",
-                boxShadow: arena.status === "live"
-                  ? "0 0 20px rgba(124,58,237,0.2), inset 0 1px 0 rgba(255,255,255,0.1)"
-                  : "inset 0 1px 0 rgba(255,255,255,0.05)",
-              }}
-            >
-              <div style={{
-                fontSize: "1.5rem",
-                marginBottom: "0.75rem",
-                color: arena.status === "live" ? "#C4B5FD" : "#4B5563",
-              }}>
-                {arena.icon}
-              </div>
-
-              <h2 style={{
-                fontSize: "1rem",
-                fontWeight: "600",
-                marginBottom: "0.4rem",
-                color: arena.status === "live" ? "#E9D5FF" : "#4B5563",
-              }}>
-                {arena.name}
-              </h2>
-
-              <p style={{
-                fontSize: "0.8rem",
-                color: arena.status === "live" ? "#9F7AEA" : "#374151",
-                marginBottom: "1rem",
-                lineHeight: 1.5,
-              }}>
-                {arena.description}
-              </p>
-
-              <span style={{
-                fontSize: "0.7rem",
-                padding: "0.25rem 0.75rem",
-                borderRadius: "100px",
-                fontWeight: "600",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                background: arena.status === "live"
-                  ? "rgba(168,85,247,0.3)"
-                  : "rgba(255,255,255,0.05)",
-                color: arena.status === "live" ? "#C4B5FD" : "#4B5563",
-                border: arena.status === "live"
-                  ? "1px solid rgba(168,85,247,0.4)"
-                  : "1px solid rgba(255,255,255,0.08)",
-              }}>
-                {arena.status === "live" ? "● Live" : "Coming Soon"}
-              </span>
-            </motion.div>
-          ))}
+          {arenas.map((arena, i) => <ArenaCard key={arena.name} arena={arena} i={i} />)}
         </div>
 
-        {/* Bottom stats */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          style={{
-            display: "flex",
-            gap: "3rem",
-            marginTop: "4rem",
-            zIndex: 1,
-            flexWrap: "wrap",
-            justifyContent: "center",
-          }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8 }}
+          style={{ display: "flex", gap: "3rem", marginTop: "4rem", zIndex: 1, flexWrap: "wrap", justifyContent: "center", position: "relative" }}
         >
           {[
             { value: "10K+", label: "Challengers" },
@@ -373,19 +249,10 @@ export default function Home() {
             { value: "∞", label: "Reputation to Earn" },
           ].map((stat) => (
             <div key={stat.label} style={{ textAlign: "center" }}>
-              <div style={{
-                fontSize: "1.5rem",
-                fontWeight: "700",
-                color: "#A855F7",
-                marginBottom: "0.25rem",
-              }}>
+              <div style={{ fontSize: "1.5rem", fontWeight: "700", color: "#A855F7", marginBottom: "0.25rem" }}>
                 {stat.value}
               </div>
-              <div style={{
-                fontSize: "0.75rem",
-                color: "#6B7280",
-                letterSpacing: "0.05em",
-              }}>
+              <div style={{ fontSize: "0.75rem", color: "#6B7280", letterSpacing: "0.05em" }}>
                 {stat.label}
               </div>
             </div>
