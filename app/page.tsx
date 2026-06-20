@@ -10,42 +10,55 @@ const arenas = [
   { icon: "⟡", name: "Trading Arena", description: "Read the market. Outplay the field.", status: "soon" },
 ];
 
-const dots = Array.from({ length: 20 }, (_, i) => ({
-  id: i, x: Math.random() * 100, y: Math.random() * 100,
-  size: Math.random() * 3 + 1, duration: Math.random() * 4 + 3,
-}));
+const dots = [
+  { id: 0, x: 12, y: 18, size: 2, duration: 4 },
+  { id: 1, x: 78, y: 25, size: 3, duration: 5 },
+  { id: 2, x: 35, y: 60, size: 2, duration: 3.5 },
+  { id: 3, x: 88, y: 70, size: 1.5, duration: 6 },
+  { id: 4, x: 20, y: 85, size: 2.5, duration: 4.5 },
+  { id: 5, x: 60, y: 10, size: 1, duration: 5.5 },
+  { id: 6, x: 45, y: 45, size: 3, duration: 3 },
+  { id: 7, x: 8, y: 55, size: 1.5, duration: 4 },
+  { id: 8, x: 92, y: 40, size: 2, duration: 5 },
+  { id: 9, x: 55, y: 80, size: 2.5, duration: 4.5 },
+  { id: 10, x: 25, y: 30, size: 1.5, duration: 6 },
+  { id: 11, x: 70, y: 92, size: 2, duration: 3.5 },
+  { id: 12, x: 15, y: 70, size: 1, duration: 5 },
+  { id: 13, x: 50, y: 15, size: 2.5, duration: 4 },
+  { id: 14, x: 82, y: 88, size: 1.5, duration: 5.5 },
+];
 
 function SilkBackground() {
   return (
     <div style={{ position: "fixed", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
       <motion.div
-        animate={{ x: [0, 100, -50, 0], y: [0, -80, 60, 0], scale: [1, 1.2, 0.9, 1] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ x: [0, 150, -80, 0], y: [0, -120, 90, 0], scale: [1, 1.3, 0.85, 1] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         style={{
-          position: "absolute", top: "-10%", left: "-10%",
-          width: "60vw", height: "60vw", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%)",
+          position: "absolute", top: "-15%", left: "-15%",
+          width: "70vw", height: "70vw", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(124,58,237,0.55) 0%, transparent 65%)",
+          filter: "blur(50px)",
+        }}
+      />
+      <motion.div
+        animate={{ x: [0, -160, 100, 0], y: [0, 130, -90, 0], scale: [1, 0.75, 1.35, 1] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute", bottom: "-20%", right: "-15%",
+          width: "75vw", height: "75vw", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(168,85,247,0.45) 0%, transparent 65%)",
           filter: "blur(60px)",
         }}
       />
       <motion.div
-        animate={{ x: [0, -120, 80, 0], y: [0, 100, -60, 0], scale: [1, 0.8, 1.3, 1] }}
-        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ x: [0, 90, -110, 0], y: [0, -70, 100, 0], scale: [1, 1.25, 0.8, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         style={{
-          position: "absolute", bottom: "-15%", right: "-10%",
-          width: "70vw", height: "70vw", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)",
+          position: "absolute", top: "25%", left: "35%",
+          width: "55vw", height: "55vw", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(233,213,255,0.3) 0%, transparent 65%)",
           filter: "blur(70px)",
-        }}
-      />
-      <motion.div
-        animate={{ x: [0, 60, -90, 0], y: [0, -50, 80, 0], scale: [1, 1.15, 0.85, 1] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position: "absolute", top: "30%", left: "40%",
-          width: "45vw", height: "45vw", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(233,213,255,0.1) 0%, transparent 70%)",
-          filter: "blur(80px)",
         }}
       />
     </div>
@@ -181,7 +194,7 @@ export default function Home() {
       <main style={{
         minHeight: "100vh", background: "#080010", color: "white",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        padding: "2rem", position: "relative", overflow: "hidden",
+        padding: "2rem", position: "relative",
         fontFamily: "'Space Grotesk', sans-serif",
       }}>
         <SilkBackground />
