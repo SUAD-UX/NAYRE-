@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const arenas = [
   { icon: "✦", name: "Prompt Arena", description: "Battle with AI prompts. Best output wins.", status: "live" },
@@ -29,39 +29,84 @@ const dots = [
 ];
 
 function SilkBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let time = 0;
+    let animId: number;
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", handleResize);
+
+    function draw() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < 5; i++) {
+        const gradient = ctx.createRadialGradient(
+          canvas.width * (0.2 + i * 0.15) + Math.sin(time * 0.4 + i) * 120,
+          canvas.height * (0.3 + i * 0.1) + Math.cos(time * 0.3 + i) * 100,
+          0,
+          canvas.width * (0.2 + i * 0.15) + Math.sin(time * 0.4 + i) * 120,
+          canvas.height * (0.3 + i * 0.1) + Math.cos(time * 0.3 + i) * 100,
+          canvas.width * 0.45
+        );
+        gradient.addColorStop(0, `rgba(124, 58, 237, ${0.35 - i * 0.04})`);
+        gradient.addColorStop(0.5, `rgba(168, 85, 247, ${0.2 - i * 0.03})`);
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      for (let j = 0; j < 8; j++) {
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height * (0.2 + j * 0.1));
+        for (let x = 0; x < canvas.width; x += 5) {
+          const y =
+            canvas.height * (0.2 + j * 0.1) +
+            Math.sin(x * 0.008 + time * 0.5 + j * 0.8) * 60 +
+            Math.sin(x * 0.004 + time * 0.3 + j) * 40;
+          ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = `rgba(196, 181, 253, ${0.06 - j * 0.005})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      time += 0.012;
+      animId = requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <div style={{ position: "fixed", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
-      <motion.div
-        animate={{ x: [0, 150, -80, 0], y: [0, -120, 90, 0], scale: [1, 1.3, 0.85, 1] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position: "absolute", top: "-15%", left: "-15%",
-          width: "70vw", height: "70vw", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(124,58,237,0.55) 0%, transparent 65%)",
-          filter: "blur(50px)",
-        }}
-      />
-      <motion.div
-        animate={{ x: [0, -160, 100, 0], y: [0, 130, -90, 0], scale: [1, 0.75, 1.35, 1] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position: "absolute", bottom: "-20%", right: "-15%",
-          width: "75vw", height: "75vw", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(168,85,247,0.45) 0%, transparent 65%)",
-          filter: "blur(60px)",
-        }}
-      />
-      <motion.div
-        animate={{ x: [0, 90, -110, 0], y: [0, -70, 100, 0], scale: [1, 1.25, 0.8, 1] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position: "absolute", top: "25%", left: "35%",
-          width: "55vw", height: "55vw", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(233,213,255,0.3) 0%, transparent 65%)",
-          filter: "blur(70px)",
-        }}
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: "none",
+        opacity: 0.9,
+      }}
+    />
   );
 }
 
