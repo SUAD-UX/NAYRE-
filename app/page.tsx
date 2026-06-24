@@ -1,13 +1,14 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 const arenas = [
-  { icon: "✦", name: "Prompt Arena", description: "Battle with AI prompts. Best output wins.", status: "live" },
-  { icon: "⌥", name: "Coding Arena", description: "Solve challenges. Ship faster than anyone.", status: "soon" },
-  { icon: "◈", name: "Marketing Arena", description: "Craft campaigns that move people.", status: "soon" },
-  { icon: "◇", name: "Business Arena", description: "Think bigger. Build smarter.", status: "soon" },
-  { icon: "⟡", name: "Trading Arena", description: "Read the market. Outplay the field.", status: "soon" },
+  { icon: "✦", name: "Prompt Arena", description: "Battle with AI prompts. Best output wins.", status: "live", path: "/arena" },
+  { icon: "⌥", name: "Coding Arena", description: "Solve challenges. Ship faster than anyone.", status: "soon", path: "/arena" },
+  { icon: "◈", name: "Marketing Arena", description: "Craft campaigns that move people.", status: "soon", path: "/arena" },
+  { icon: "◇", name: "Business Arena", description: "Think bigger. Build smarter.", status: "soon", path: "/arena" },
+  { icon: "⟡", name: "Trading Arena", description: "Read the market. Outplay the field.", status: "soon", path: "/arena" },
 ];
 
 const dots = [
@@ -53,38 +54,23 @@ function SilkBackground() {
       if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      for (let i = 0; i < 5; i++) {
-        const gradient = ctx.createRadialGradient(
-          canvas.width * (0.2 + i * 0.15) + Math.sin(time * 0.4 + i) * 120,
-          canvas.height * (0.3 + i * 0.1) + Math.cos(time * 0.3 + i) * 100,
-          0,
-          canvas.width * (0.2 + i * 0.15) + Math.sin(time * 0.4 + i) * 120,
-          canvas.height * (0.3 + i * 0.1) + Math.cos(time * 0.3 + i) * 100,
-          canvas.width * 0.45
-        );
-        gradient.addColorStop(0, `rgba(124, 58, 237, ${0.35 - i * 0.04})`);
-        gradient.addColorStop(0.5, `rgba(168, 85, 247, ${0.2 - i * 0.03})`);
-        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-
-      for (let j = 0; j < 8; j++) {
+      // Tight compressed silk waves — slow, small, dense
+      for (let j = 0; j < 20; j++) {
         ctx.beginPath();
-        ctx.moveTo(0, canvas.height * (0.2 + j * 0.1));
-        for (let x = 0; x < canvas.width; x += 5) {
+        ctx.moveTo(0, canvas.height * (0.05 + j * 0.05));
+        for (let x = 0; x < canvas.width; x += 3) {
           const y =
-            canvas.height * (0.2 + j * 0.1) +
-            Math.sin(x * 0.008 + time * 0.5 + j * 0.8) * 60 +
-            Math.sin(x * 0.004 + time * 0.3 + j) * 40;
+            canvas.height * (0.05 + j * 0.05) +
+            Math.sin(x * 0.02 + time * 0.15 + j * 0.5) * 12 +
+            Math.sin(x * 0.01 + time * 0.1 + j * 0.3) * 8;
           ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = `rgba(196, 181, 253, ${0.06 - j * 0.005})`;
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = `rgba(196, 181, 253, ${0.045 - j * 0.001})`;
+        ctx.lineWidth = 0.8;
         ctx.stroke();
       }
 
-      time += 0.012;
+      time += 0.008;
       animId = requestAnimationFrame(draw);
     }
 
@@ -104,13 +90,18 @@ function SilkBackground() {
         inset: 0,
         zIndex: 0,
         pointerEvents: "none",
-        opacity: 0.9,
+        opacity: 0.8,
       }}
     />
   );
 }
 
-function ArenaCard({ arena, i }: { arena: typeof arenas[0]; i: number }) {
+function ArenaCard({ arena, i, isSelected, onSelect }: {
+  arena: typeof arenas[0];
+  i: number;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 60 }}
@@ -118,16 +109,23 @@ function ArenaCard({ arena, i }: { arena: typeof arenas[0]; i: number }) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7, delay: i * 0.1, ease: "easeOut" }}
       whileHover={{ y: -4, scale: 1.02 }}
+      onClick={() => arena.status === "live" && onSelect()}
       style={{
-        background: arena.status === "live"
-          ? "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(168,85,247,0.1))"
+        background: isSelected
+          ? "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(168,85,247,0.2))"
+          : arena.status === "live"
+          ? "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.08))"
           : "rgba(255,255,255,0.03)",
-        border: arena.status === "live" ? "1px solid rgba(168,85,247,0.5)" : "1px solid rgba(255,255,255,0.08)",
+        border: isSelected
+          ? "1px solid rgba(168,85,247,0.8)"
+          : arena.status === "live"
+          ? "1px solid rgba(168,85,247,0.5)"
+          : "1px solid rgba(255,255,255,0.08)",
         borderRadius: "16px", padding: "1.5rem",
         cursor: arena.status === "live" ? "pointer" : "default",
         backdropFilter: "blur(10px)",
         boxShadow: arena.status === "live"
-          ? "0 0 20px rgba(124,58,237,0.2), inset 0 1px 0 rgba(255,255,255,0.1)"
+          ? "0 0 20px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.1)"
           : "inset 0 1px 0 rgba(255,255,255,0.05)",
       }}
     >
@@ -156,6 +154,8 @@ function ArenaCard({ arena, i }: { arena: typeof arenas[0]; i: number }) {
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [splashPhase, setSplashPhase] = useState(0);
+  const [selectedArena, setSelectedArena] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const t1 = setTimeout(() => setSplashPhase(1), 800);
@@ -164,6 +164,8 @@ export default function Home() {
     const t4 = setTimeout(() => setShowSplash(false), 4200);
     return () => [t1, t2, t3, t4].forEach(clearTimeout);
   }, []);
+
+  const activeArena = arenas[selectedArena];
 
   return (
     <>
@@ -274,24 +276,34 @@ export default function Home() {
             The arena for AI creators, coders, marketers & traders.
           </p>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-            style={{
-              background: "linear-gradient(135deg, #7C3AED, #A855F7)", color: "white", border: "none",
-              padding: "1rem 2.5rem", borderRadius: "100px", fontSize: "1rem", fontWeight: "600",
-              cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 0 30px rgba(168,85,247,0.4)",
-            }}
-          >
-            Enter Prompt Arena →
-          </motion.button>
+          <a href={activeArena.path} style={{ textDecoration: "none" }}>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              style={{
+                background: "linear-gradient(135deg, #7C3AED, #A855F7)", color: "white", border: "none",
+                padding: "1rem 2.5rem", borderRadius: "100px", fontSize: "1rem", fontWeight: "600",
+                cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 0 30px rgba(168,85,247,0.4)",
+              }}
+            >
+              Enter {activeArena.name} →
+            </motion.button>
+          </a>
         </motion.div>
 
         <div style={{
           display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
           gap: "1rem", maxWidth: "1000px", width: "100%", zIndex: 1, position: "relative",
         }}>
-          {arenas.map((arena, i) => <ArenaCard key={arena.name} arena={arena} i={i} />)}
+          {arenas.map((arena, i) => (
+            <ArenaCard
+              key={arena.name}
+              arena={arena}
+              i={i}
+              isSelected={selectedArena === i}
+              onSelect={() => setSelectedArena(i)}
+            />
+          ))}
         </div>
 
         <motion.div
