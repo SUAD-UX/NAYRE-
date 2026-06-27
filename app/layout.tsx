@@ -39,8 +39,9 @@ export default function RootLayout({
 
           <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
             <a href="/arena" style={navLinkStyle}>Arena</a>
-<a href="/leaderboard" style={navLinkStyle}>Leaderboard</a>
-<a href="/profile" style={navLinkStyle}>Profile</a>
+            <a href="/leaderboard" style={navLinkStyle}>Leaderboard</a>
+            <a href="/profile" style={navLinkStyle}>Profile</a>
+            <a href="/login" style={navLinkStyle}>Login</a>
             <a href="/signup" style={{
               background: "linear-gradient(135deg, #7C3AED, #A855F7)",
               color: "white", textDecoration: "none",
