@@ -22,7 +22,7 @@ export default function RootLayout({
       <body style={{ fontFamily: "'Space Grotesk', sans-serif", margin: 0, background: "#080010" }}>
         <nav style={{
           position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-          padding: "1rem 2rem",
+          padding: "1rem 1.5rem",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           borderBottom: "1px solid rgba(168,85,247,0.15)",
           backdropFilter: "blur(20px)",
@@ -37,15 +37,14 @@ export default function RootLayout({
             NAYRE
           </a>
 
-          <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
-            <a href="/arena" style={navLinkStyle}>Arena</a>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
             <a href="/leaderboard" style={navLinkStyle}>Leaderboard</a>
             <a href="/profile" style={navLinkStyle}>Profile</a>
             <a href="/login" style={navLinkStyle}>Login</a>
             <a href="/signup" style={{
               background: "linear-gradient(135deg, #7C3AED, #A855F7)",
               color: "white", textDecoration: "none",
-              padding: "0.5rem 1.25rem", borderRadius: "100px",
+              padding: "0.5rem 1.1rem", borderRadius: "100px",
               fontSize: "0.85rem", fontWeight: "600",
             }}>
               Join Now

@@ -74,20 +74,25 @@ export default function Arena() {
 
   return (
     <main style={{
-      minHeight: "100vh", background: "#080010", color: "white",
-      padding: "2rem", fontFamily: "'Space Grotesk', sans-serif",
+      minHeight: "100vh",
+      background: "#080010",
+      color: "white",
+      padding: "1rem",
+      fontFamily: "'Space Grotesk', sans-serif",
     }}>
       <div style={{
         position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
         background: "radial-gradient(ellipse at top, rgba(124,58,237,0.1) 0%, transparent 60%)",
       }} />
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: "700px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          style={{ marginBottom: "3rem" }}
+          style={{ marginBottom: "2rem" }}
         >
           <div style={{
             display: "inline-block", fontSize: "0.7rem", letterSpacing: "0.2em",
@@ -98,18 +103,20 @@ export default function Arena() {
             🔥 Live Arena
           </div>
           <h1 style={{
-            fontSize: "2.5rem", fontWeight: "700", marginBottom: "0.5rem",
+            fontSize: "clamp(1.8rem, 6vw, 2.5rem)",
+            fontWeight: "700", marginBottom: "0.5rem", margin: "0 0 0.5rem 0",
             background: "linear-gradient(135deg, #E9D5FF 0%, #A855F7 100%)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             backgroundClip: "text",
           }}>
             Prompt Arena
           </h1>
-          <p style={{ color: "#6B7280", fontSize: "0.95rem" }}>
+          <p style={{ color: "#6B7280", fontSize: "0.9rem", margin: 0 }}>
             Pick a challenge. Submit your best prompt. Let the community decide.
           </p>
         </motion.div>
 
+        {/* Message banner */}
         {message && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -126,6 +133,7 @@ export default function Arena() {
           </motion.div>
         )}
 
+        {/* Challenges */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           {challenges.map((challenge, i) => (
             <motion.div
@@ -133,9 +141,6 @@ export default function Arena() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              onClick={() => setActiveChallenge(
-                activeChallenge === challenge.id ? null : challenge.id
-              )}
               style={{
                 background: activeChallenge === challenge.id
                   ? "linear-gradient(135deg, rgba(124,58,237,0.25), rgba(168,85,247,0.15))"
@@ -143,107 +148,121 @@ export default function Arena() {
                 border: activeChallenge === challenge.id
                   ? "1px solid rgba(168,85,247,0.6)"
                   : "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "16px", padding: "1.5rem",
-                cursor: "pointer", transition: "all 0.3s ease",
+                borderRadius: "16px",
+                padding: "1.25rem",
+                transition: "all 0.3s ease",
                 backdropFilter: "blur(10px)",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-                <h2 style={{ fontSize: "1.1rem", fontWeight: "600", color: "#E9D5FF", margin: 0 }}>
-                  {challenge.title}
-                </h2>
-                <span style={{
-                  fontSize: "0.7rem", color: "#F59E0B",
-                  border: "1px solid rgba(245,158,11,0.3)",
-                  padding: "0.2rem 0.6rem", borderRadius: "100px",
-                  whiteSpace: "nowrap", marginLeft: "1rem",
-                }}>
-                  ⏱ {challenge.deadline}
-                </span>
+              {/* Challenge header */}
+              <div style={{ marginBottom: "0.75rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  <h2 style={{ fontSize: "1rem", fontWeight: "600", color: "#E9D5FF", margin: 0, flex: 1 }}>
+                    {challenge.title}
+                  </h2>
+                  <span style={{
+                    fontSize: "0.65rem", color: "#F59E0B",
+                    border: "1px solid rgba(245,158,11,0.3)",
+                    padding: "0.2rem 0.5rem", borderRadius: "100px",
+                    whiteSpace: "nowrap", flexShrink: 0,
+                  }}>
+                    ⏱ {challenge.deadline}
+                  </span>
+                </div>
+                <p style={{ fontSize: "0.82rem", color: "#9F7AEA", margin: 0, lineHeight: 1.5 }}>
+                  {challenge.description}
+                </p>
               </div>
 
-              <p style={{ fontSize: "0.85rem", color: "#9F7AEA", marginBottom: "1rem", lineHeight: 1.6 }}>
-                {challenge.description}
-              </p>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", gap: "1rem" }}>
-                  <span style={{ fontSize: "0.8rem", color: "#6B7280" }}>
+              {/* Stats row */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                  <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>
                     👥 {challenge.submissions} submissions
                   </span>
-                  <span style={{ fontSize: "0.8rem", color: "#6B7280" }}>
+                  <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>
                     {challenge.prize}
                   </span>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={(e) => { e.stopPropagation(); setActiveChallenge(challenge.id); }}
-                  style={{
-                    background: "linear-gradient(135deg, #7C3AED, #A855F7)",
-                    color: "white", border: "none", padding: "0.5rem 1.25rem",
-                    borderRadius: "100px", fontSize: "0.85rem", fontWeight: "600",
-                    cursor: "pointer",
-                  }}
-                >
-                  Submit →
-                </motion.button>
               </div>
 
+              {/* Submit button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setActiveChallenge(
+                  activeChallenge === challenge.id ? null : challenge.id
+                )}
+                style={{
+                  width: "100%",
+                  background: activeChallenge === challenge.id
+                    ? "rgba(255,255,255,0.06)"
+                    : "linear-gradient(135deg, #7C3AED, #A855F7)",
+                  color: "white", border: activeChallenge === challenge.id
+                    ? "1px solid rgba(255,255,255,0.1)" : "none",
+                  padding: "0.75rem",
+                  borderRadius: "100px", fontSize: "0.9rem", fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                {activeChallenge === challenge.id ? "Close ✕" : "Submit Entry →"}
+              </motion.button>
+
+              {/* Expanded form */}
               {activeChallenge === challenge.id && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  style={{ marginTop: "1.5rem", borderTop: "1px solid rgba(168,85,247,0.2)", paddingTop: "1.5rem" }}
-                  onClick={(e) => e.stopPropagation()}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ marginTop: "1.25rem", borderTop: "1px solid rgba(168,85,247,0.2)", paddingTop: "1.25rem" }}
                 >
-                  <p style={{ fontSize: "0.8rem", color: "#9F7AEA", marginBottom: "0.75rem" }}>
-                    Your prompt submission:
+                  <p style={{ fontSize: "0.8rem", color: "#9F7AEA", marginBottom: "0.75rem", margin: "0 0 0.75rem 0" }}>
+                    ✍️ Your prompt:
                   </p>
                   <textarea
                     placeholder="Type your prompt here... Be specific, creative, and detailed."
                     value={promptText}
                     onChange={(e) => setPromptText(e.target.value)}
                     style={{
-                      width: "100%", minHeight: "120px", padding: "0.75rem",
+                      width: "100%", minHeight: "100px", padding: "0.75rem",
                       background: "rgba(255,255,255,0.05)",
                       border: "1px solid rgba(255,255,255,0.1)",
                       borderRadius: "10px", color: "white", fontSize: "0.9rem",
                       fontFamily: "inherit", outline: "none", resize: "vertical",
+                      boxSizing: "border-box", marginBottom: "0.75rem",
+                    }}
+                  />
+                  <input
+                    type="url"
+                    placeholder="Screenshot URL (optional)"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    style={{
+                      width: "100%", padding: "0.7rem 1rem",
+                      marginBottom: "0.75rem",
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "10px", color: "white", fontSize: "0.85rem",
+                      fontFamily: "inherit", outline: "none",
                       boxSizing: "border-box",
                     }}
                   />
-                  <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.75rem" }}>
-                    <input
-                      type="url"
-                      placeholder="Screenshot URL (optional)"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      style={{
-                        flex: 1, padding: "0.7rem 1rem",
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        borderRadius: "10px", color: "white", fontSize: "0.85rem",
-                        fontFamily: "inherit", outline: "none",
-                      }}
-                    />
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => handleSubmit(challenge.id)}
-                      disabled={submitting}
-                      style={{
-                        background: "linear-gradient(135deg, #7C3AED, #A855F7)",
-                        color: "white", border: "none", padding: "0.7rem 1.5rem",
-                        borderRadius: "100px", fontSize: "0.85rem", fontWeight: "600",
-                        cursor: submitting ? "not-allowed" : "pointer",
-                        opacity: submitting ? 0.6 : 1,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {submitting ? "Submitting..." : "Submit Entry"}
-                    </motion.button>
-                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleSubmit(challenge.id)}
+                    disabled={submitting}
+                    style={{
+                      width: "100%",
+                      background: "linear-gradient(135deg, #7C3AED, #A855F7)",
+                      color: "white", border: "none", padding: "0.85rem",
+                      borderRadius: "100px", fontSize: "0.9rem", fontWeight: "600",
+                      cursor: submitting ? "not-allowed" : "pointer",
+                      opacity: submitting ? 0.6 : 1,
+                    }}
+                  >
+                    {submitting ? "Submitting..." : "🔥 Submit Entry"}
+                  </motion.button>
                 </motion.div>
               )}
             </motion.div>
@@ -254,7 +273,7 @@ export default function Arena() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          style={{ textAlign: "center", color: "#374151", fontSize: "0.8rem", marginTop: "3rem" }}
+          style={{ textAlign: "center", color: "#374151", fontSize: "0.8rem", marginTop: "2rem" }}
         >
           New challenges every 3 weeks. Submit early. Vote daily. Rise. 🔥
         </motion.p>
