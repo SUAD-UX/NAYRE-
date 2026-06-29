@@ -19,13 +19,11 @@ export default function Profile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
       setUser(user);
-
       const { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .single();
-
       if (data) {
         setProfile(data);
         setUsername(data.username || "");
@@ -38,32 +36,20 @@ export default function Profile() {
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-
     setUploading(true);
     const fileExt = file.name.split(".").pop();
     const filePath = `${user.id}.${fileExt}`;
-
     const { error: uploadError } = await supabase.storage
       .from("avatars")
       .upload(filePath, file, { upsert: true });
-
     if (uploadError) {
       setMessage("Upload failed. Try again.");
       setUploading(false);
       return;
     }
-
-    const { data } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(filePath);
-
+    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
     const avatarUrl = data.publicUrl;
-
-    await supabase
-      .from("profiles")
-      .update({ avatar_url: avatarUrl })
-      .eq("id", user.id);
-
+    await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
     setProfile({ ...profile, avatar_url: avatarUrl });
     setMessage("Avatar updated!");
     setUploading(false);
@@ -73,11 +59,7 @@ export default function Profile() {
   async function handleSave() {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ username })
-      .eq("id", user.id);
-
+    const { error } = await supabase.from("profiles").update({ username }).eq("id", user.id);
     if (error) {
       setMessage("Failed to save. Try again.");
     } else {
@@ -110,15 +92,14 @@ export default function Profile() {
   return (
     <main style={{
       minHeight: "100vh", background: "#080010", color: "white",
-      padding: "2rem", fontFamily: "'Space Grotesk', sans-serif",
+      padding: "1.5rem", fontFamily: "'Space Grotesk', sans-serif",
     }}>
       <div style={{
         position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
         background: "radial-gradient(ellipse at top, rgba(124,58,237,0.1) 0%, transparent 60%)",
       }} />
 
-      <div style={{ maxWidth: "700px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-
+      <div style={{ maxWidth: "600px", margin: "0 auto", position: "relative", zIndex: 1 }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -126,21 +107,25 @@ export default function Profile() {
           style={{
             background: "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(168,85,247,0.1))",
             border: "1px solid rgba(168,85,247,0.4)",
-            borderRadius: "24px", padding: "2.5rem",
-            marginBottom: "1.5rem",
+            borderRadius: "24px", padding: "2rem",
+            marginBottom: "1rem",
             backdropFilter: "blur(10px)",
             boxShadow: "0 0 40px rgba(124,58,237,0.15)",
           }}
         >
-          {/* Avatar with upload */}
-          <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginBottom: "2rem" }}>
-            <div style={{ position: "relative", flexShrink: 0 }}>
+          {/* Avatar + Info — stacked on mobile */}
+          <div style={{
+            display: "flex", flexDirection: "column",
+            alignItems: "center", gap: "1rem",
+            marginBottom: "2rem", textAlign: "center",
+          }}>
+            <div style={{ position: "relative" }}>
               {profile?.avatar_url ? (
                 <img
                   src={profile.avatar_url}
                   alt="avatar"
                   style={{
-                    width: "80px", height: "80px", borderRadius: "50%",
+                    width: "90px", height: "90px", borderRadius: "50%",
                     objectFit: "cover",
                     boxShadow: "0 0 20px rgba(168,85,247,0.4)",
                     border: "2px solid rgba(168,85,247,0.5)",
@@ -148,23 +133,21 @@ export default function Profile() {
                 />
               ) : (
                 <div style={{
-                  width: "80px", height: "80px", borderRadius: "50%",
+                  width: "90px", height: "90px", borderRadius: "50%",
                   background: "linear-gradient(135deg, #7C3AED, #A855F7)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "2rem", fontWeight: "700", color: "white",
+                  fontSize: "2.5rem", fontWeight: "700", color: "white",
                   boxShadow: "0 0 20px rgba(168,85,247,0.4)",
                 }}>
                   {(profile?.username || user.email)?.[0]?.toUpperCase()}
                 </div>
               )}
-
-              {/* Upload button overlay */}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
                 style={{
                   position: "absolute", bottom: 0, right: 0,
-                  width: "26px", height: "26px", borderRadius: "50%",
+                  width: "28px", height: "28px", borderRadius: "50%",
                   background: "#7C3AED", border: "2px solid #080010",
                   cursor: "pointer", display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: "0.7rem",
@@ -172,7 +155,6 @@ export default function Profile() {
               >
                 {uploading ? "..." : "📷"}
               </button>
-
               <input
                 ref={fileInputRef}
                 type="file"
@@ -184,17 +166,22 @@ export default function Profile() {
 
             <div>
               <h1 style={{
-                fontSize: "1.5rem", fontWeight: "700", margin: "0 0 0.25rem 0",
+                fontSize: "1.6rem", fontWeight: "700", margin: "0 0 0.3rem 0",
                 background: "linear-gradient(135deg, #E9D5FF, #A855F7)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
               }}>
                 @{profile?.username || "unnamed"}
               </h1>
-              <p style={{ color: "#6B7280", fontSize: "0.85rem", margin: 0 }}>
+              <p style={{
+                color: "#6B7280", fontSize: "0.78rem",
+                margin: "0 0 0.2rem 0",
+                wordBreak: "break-all",
+                maxWidth: "260px",
+              }}>
                 {user.email}
               </p>
-              <p style={{ color: "#4B5563", fontSize: "0.75rem", margin: "0.25rem 0 0 0" }}>
+              <p style={{ color: "#4B5563", fontSize: "0.72rem", margin: 0 }}>
                 Tap 📷 to change avatar
               </p>
             </div>
@@ -203,7 +190,7 @@ export default function Profile() {
           {/* Stats */}
           <div style={{
             display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "1rem", marginBottom: "2rem",
+            gap: "0.75rem", marginBottom: "1.5rem",
           }}>
             {[
               { label: "Reputation", value: profile?.reputation_score || 0 },
@@ -213,12 +200,12 @@ export default function Profile() {
               <div key={stat.label} style={{
                 background: "rgba(255,255,255,0.05)",
                 border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "12px", padding: "1rem", textAlign: "center",
+                borderRadius: "12px", padding: "0.85rem", textAlign: "center",
               }}>
-                <div style={{ fontSize: "1.5rem", fontWeight: "700", color: "#A855F7" }}>
+                <div style={{ fontSize: "1.4rem", fontWeight: "700", color: "#A855F7" }}>
                   {stat.value}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#6B7280", marginTop: "0.25rem" }}>
+                <div style={{ fontSize: "0.7rem", color: "#6B7280", marginTop: "0.2rem" }}>
                   {stat.label}
                 </div>
               </div>
@@ -226,8 +213,8 @@ export default function Profile() {
           </div>
 
           {/* Badges */}
-          <div style={{ marginBottom: "2rem" }}>
-            <p style={{ fontSize: "0.8rem", color: "#6B7280", marginBottom: "0.75rem" }}>BADGES</p>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <p style={{ fontSize: "0.75rem", color: "#6B7280", marginBottom: "0.6rem" }}>BADGES</p>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               {["🌱 Newcomer"].map((badge) => (
                 <span key={badge} style={{
@@ -241,7 +228,7 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Edit profile */}
+          {/* Edit username */}
           {!editing ? (
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -249,7 +236,7 @@ export default function Profile() {
               onClick={() => setEditing(true)}
               style={{
                 background: "rgba(255,255,255,0.06)", color: "#C4B5FD",
-                border: "1px solid rgba(168,85,247,0.3)", padding: "0.75rem 1.5rem",
+                border: "1px solid rgba(168,85,247,0.3)", padding: "0.75rem",
                 borderRadius: "100px", fontSize: "0.9rem", fontWeight: "600",
                 cursor: "pointer", width: "100%",
               }}
@@ -263,7 +250,7 @@ export default function Profile() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 style={{
-                  width: "100%", padding: "0.75rem 1rem", marginBottom: "1rem",
+                  width: "100%", padding: "0.75rem 1rem", marginBottom: "0.75rem",
                   background: "rgba(255,255,255,0.05)", border: "1px solid rgba(168,85,247,0.3)",
                   borderRadius: "10px", color: "white", fontSize: "0.9rem",
                   fontFamily: "inherit", outline: "none", boxSizing: "border-box",
